@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' hide Transaction;
 import 'package:tp_wallet/main.dart';
@@ -11,18 +12,22 @@ void main() {
   sqfliteFfiInit();
   // Không có phần Android gốc khi chạy kiểm thử.
 
-
   testWidgets('các màn hình chính hiển thị được', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     late AppState s;
     await tester.runAsync(() async {
       await initializeDateFormatting('vi');
       final db = await AppDatabase.open(
-          path: inMemoryDatabasePath, factory: databaseFactoryFfi);
+        path: inMemoryDatabasePath,
+        factory: databaseFactoryFfi,
+      );
       s = AppState(db);
       await s.init();
       await s.clearAll();
-      final d = s.draftFromText('-45.000đ ND: Highlands Coffee', source: TxSource.paste)!;
+      final d = s.draftFromText(
+        '-45.000đ ND: Highlands Coffee',
+        source: TxSource.paste,
+      )!;
       await s.save(d);
     });
     await tester.pumpWidget(TpWalletApp(state: s));
@@ -46,6 +51,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Thêm giao dịch'), findsOneWidget);
     expect(find.text('Ăn uống'), findsOneWidget);
+
+    // Gõ "Lương" vào ghi chú -> tự chuyển sang khoản thu.
+    await tester.enterText(find.widgetWithText(TextField, 'Ghi chú / nội dung'), 'Lương tháng 11');
+    await tester.pumpAndSettle();
+    expect(find.text('Lương'), findsOneWidget);
+    expect(find.text('Ăn uống'), findsNothing);
     debugDefaultTargetPlatformOverride = null;
   });
 }

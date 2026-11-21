@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/category.dart';
 import '../models/transaction.dart';
 import '../state/app_state.dart';
+import '../services/categorizer.dart';
 import '../theme.dart';
 import '../widgets/amount_input.dart';
 
@@ -28,6 +29,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   late final TextEditingController _amount;
   late final TextEditingController _note;
   bool _categoryTouched = false;
+  bool _typeTouched = false;
 
   bool get _isEdit => widget.initial?.id != null;
 
@@ -43,6 +45,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     );
     _note = TextEditingController(text: t?.note ?? '');
     _categoryTouched = t != null;
+    _typeTouched = t != null;
   }
 
   @override
@@ -63,6 +66,12 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   }
 
   void _onNoteChanged(String v) {
+    // Gõ "lương", "thưởng"... thì tự chuyển sang Thu (nếu chưa tự chọn).
+    if (!_typeTouched &&
+        _type == TxType.expense &&
+        Categorizer.hasIncomeHint(v)) {
+      _setType(TxType.income);
+    }
     if (_categoryTouched) return;
     final s = context.read<AppState>().suggestCategory(_type, v);
     if (s != _categoryId) setState(() => _categoryId = s);
@@ -166,26 +175,47 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
             Card(
               color: const Color(0xFFFEF3C7),
               child: const ListTile(
-                leading: Icon(Icons.auto_awesome_rounded, color: Color(0xFFB45309)),
+                leading: Icon(
+                  Icons.auto_awesome_rounded,
+                  color: Color(0xFFB45309),
+                ),
                 title: Text('App đã tự đọc giao dịch này'),
                 subtitle: Text('Kiểm tra lại rồi bấm Lưu'),
               ),
             ),
           SegmentedButton<TxType>(
+            style: SegmentedButton.styleFrom(
+              selectedBackgroundColor:
+                  (_type == TxType.income
+                          ? AppColors.income
+                          : AppColors.expense)
+                      .withValues(alpha: 0.16),
+              selectedForegroundColor: _type == TxType.income
+                  ? AppColors.brandDark
+                  : AppColors.expense,
+              textStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
+              minimumSize: const Size.fromHeight(48),
+            ),
             segments: const [
               ButtonSegment(
                 value: TxType.expense,
-                label: Text('Chi'),
-                icon: Icon(Icons.arrow_upward),
+                label: Text('Khoản chi'),
+                icon: Icon(Icons.north_east_rounded),
               ),
               ButtonSegment(
                 value: TxType.income,
-                label: Text('Thu'),
-                icon: Icon(Icons.arrow_downward),
+                label: Text('Khoản thu'),
+                icon: Icon(Icons.south_west_rounded),
               ),
             ],
             selected: {_type},
-            onSelectionChanged: (v) => _setType(v.first),
+            onSelectionChanged: (v) {
+              _typeTouched = true;
+              _setType(v.first);
+            },
           ),
           const SizedBox(height: 16),
           TextField(

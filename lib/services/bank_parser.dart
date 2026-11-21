@@ -122,7 +122,8 @@ class BankParser {
   );
 
   static final _incomeKw = RegExp(
-    r'nhan duoc|ban da nhan|ban vua nhan|da nhan|nhan tien|ghi co|\bcredit|duoc cong|tien vao|hoan tien|refund|\btang\b',
+    r'nhan duoc|ban da nhan|ban vua nhan|da nhan|nhan tien|ghi co|\bcredit|duoc cong|tien vao|hoan tien|refund|\btang\b|'
+    r'\bluong\b|\bthuong\b|salary|bonus|tien di lam|lam them|tien cong\b|thu nhap|tien lai|\bli xi\b',
   );
   static final _expenseKw = RegExp(
     r'thanh toan|chuyen tien thanh cong|chuyen khoan thanh cong|giao dich thanh cong|da chuyen|ghi no|\bdebit|rut tien|bi tru|\btru\b|tien ra|\bgiam\b|chuyen den|chuyen toi|nguoi nhan',

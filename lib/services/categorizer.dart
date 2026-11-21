@@ -31,6 +31,17 @@ class Categorizer {
     return words.join(' ');
   }
 
+  /// Văn bản có từ khóa rõ là khoản thu (lương, thưởng, hoàn tiền...)?
+  static bool hasIncomeHint(String text) {
+    final n = normalizeVi(text);
+    if (n.trim().isEmpty) return false;
+    for (final c in Categories.ofType(TxType.income)) {
+      if (_isTransfer(c.id) || c.id == Categories.otherIncomeId) continue;
+      if (c.keywords.any((kw) => _containsWord(n, kw))) return true;
+    }
+    return false;
+  }
+
   static bool _isTransfer(String id) =>
       id == Categories.transferOutId || id == Categories.transferInId;
 

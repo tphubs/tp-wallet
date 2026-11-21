@@ -15,7 +15,9 @@ void main() {
 
   setUp(() async {
     final db = await AppDatabase.open(
-        path: inMemoryDatabasePath, factory: databaseFactoryFfi);
+      path: inMemoryDatabasePath,
+      factory: databaseFactoryFfi,
+    );
     s = AppState(db);
     await s.init();
     await s.clearAll();
@@ -25,8 +27,9 @@ void main() {
     final now = DateTime.now();
     final d = '${now.day}/${now.month}/${now.year}';
     final draft = s.draftFromText(
-        'TK 0123|GD: -45,000VND $d 08:00 |SD: 955,000VND|ND: HIGHLANDS COFFEE',
-        source: TxSource.paste)!;
+      'TK 0123|GD: -45,000VND $d 08:00 |SD: 955,000VND|ND: HIGHLANDS COFFEE',
+      source: TxSource.paste,
+    )!;
     expect(draft.categoryId, 'cafe');
     expect(draft.needsReview, isTrue);
     await s.save(draft);
@@ -37,14 +40,18 @@ void main() {
   });
 
   test('học hạng mục khi người dùng sửa', () async {
-    final draft = s.draftFromText('-200.000 VND ND: NGUYEN THI LAN chuyen tien',
-        source: TxSource.paste)!;
+    final draft = s.draftFromText(
+      '-200.000 VND ND: NGUYEN THI LAN chuyen tien',
+      source: TxSource.paste,
+    )!;
     expect(draft.categoryId, 'chuyen_tien');
     await s.insertForTest(draft);
     final saved = s.transactions.first;
     await s.save(saved.copyWith(categoryId: 'nha_cua'), original: saved);
-    final next = s.draftFromText('-300.000 VND ND: NGUYEN THI LAN chuyen tien thang 12',
-        source: TxSource.paste)!;
+    final next = s.draftFromText(
+      '-300.000 VND ND: NGUYEN THI LAN chuyen tien thang 12',
+      source: TxSource.paste,
+    )!;
     expect(next.categoryId, 'nha_cua');
   });
 }
