@@ -34,7 +34,9 @@ void main() {
     late AppState s;
     late Transaction draft;
     await tester.runAsync(() async {
-      await _font('Roboto', ['$fonts/Roboto-Regular.ttf', '$fonts/Roboto-Medium.ttf', '$fonts/Roboto-Bold.ttf']);
+      await _font('BeVietnamPro', [
+        for (final w in [400, 500, 600, 700, 800]) 'assets/fonts/BeVietnamPro-$w.ttf'
+      ]);
       await _font('MaterialIcons', ['$fonts/MaterialIcons-Regular.otf']);
       await initializeDateFormatting('vi');
       final db = await AppDatabase.open(path: inMemoryDatabasePath, factory: databaseFactoryFfi);
@@ -63,11 +65,7 @@ void main() {
           source: TxSource.screenshot)!;
     });
 
-    final theme = ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: TpWalletApp.seed), fontFamily: 'Roboto');
     await tester.pumpWidget(TpWalletApp(state: s));
-    // Ghi đè font cho ảnh xem trước.
-    await tester.pumpWidget(Theme(data: theme, child: TpWalletApp(state: s)));
     await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/1_so_thu_chi.png'));
 

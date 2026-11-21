@@ -40,10 +40,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     for (final t in transactions.where((t) => t.type == type)) {
       map[t.categoryId] = (map[t.categoryId] ?? 0) + t.amount;
     }
-    final list = map.entries
-        .map((e) => CategoryTotal(Categories.byId(e.key), e.value))
-        .toList()
-      ..sort((a, b) => b.total.compareTo(a.total));
+    final list =
+        map.entries
+            .map((e) => CategoryTotal(Categories.byId(e.key), e.value))
+            .toList()
+          ..sort((a, b) => b.total.compareTo(a.total));
     return list;
   }
 
@@ -95,7 +96,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   Future<List<Transaction>> reviewList() => _db.needingReview();
 
   String suggestCategory(TxType type, String description, [String full = '']) =>
-      _categorizer.categorize(type: type, description: description, fullText: full);
+      _categorizer.categorize(
+        type: type,
+        description: description,
+        fullText: full,
+      );
 
   /// Biến văn bản (thông báo / OCR / dán) thành giao dịch nháp.
   Transaction? draftFromText(
@@ -128,10 +133,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     var added = 0;
     for (final n in items) {
       if (!BankParser.looksLikeTransaction(n.fullText)) continue;
-      final t = draftFromText(n.fullText,
-          source: TxSource.notification,
-          packageName: n.packageName,
-          fallbackDate: n.postedAt);
+      final t = draftFromText(
+        n.fullText,
+        source: TxSource.notification,
+        packageName: n.packageName,
+        fallbackDate: n.postedAt,
+      );
       if (t == null) continue;
       // Dùng giờ nhận thông báo nếu ngày đọc được lệch quá xa (ví dụ đọc nhầm).
       final tx = (t.date.difference(n.postedAt).inDays.abs() > 2)

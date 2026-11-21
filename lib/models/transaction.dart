@@ -42,43 +42,42 @@ class Transaction {
     String? note,
     DateTime? date,
     bool? needsReview,
-  }) =>
-      Transaction(
-        id: id ?? this.id,
-        amount: amount ?? this.amount,
-        type: type ?? this.type,
-        categoryId: categoryId ?? this.categoryId,
-        note: note ?? this.note,
-        date: date ?? this.date,
-        source: source,
-        bank: bank,
-        rawText: rawText,
-        needsReview: needsReview ?? this.needsReview,
-      );
+  }) => Transaction(
+    id: id ?? this.id,
+    amount: amount ?? this.amount,
+    type: type ?? this.type,
+    categoryId: categoryId ?? this.categoryId,
+    note: note ?? this.note,
+    date: date ?? this.date,
+    source: source,
+    bank: bank,
+    rawText: rawText,
+    needsReview: needsReview ?? this.needsReview,
+  );
 
   Map<String, Object?> toMap() => {
-        if (id != null) 'id': id,
-        'amount': amount,
-        'type': type.name,
-        'category_id': categoryId,
-        'note': note,
-        'date': date.millisecondsSinceEpoch,
-        'source': source.name,
-        'bank': bank,
-        'raw_text': rawText,
-        'needs_review': needsReview ? 1 : 0,
-      };
+    if (id != null) 'id': id,
+    'amount': amount,
+    'type': type.name,
+    'category_id': categoryId,
+    'note': note,
+    'date': date.millisecondsSinceEpoch,
+    'source': source.name,
+    'bank': bank,
+    'raw_text': rawText,
+    'needs_review': needsReview ? 1 : 0,
+  };
 
   factory Transaction.fromMap(Map<String, Object?> m) => Transaction(
-        id: m['id'] as int?,
-        amount: m['amount'] as int,
-        type: TxType.values.byName(m['type'] as String),
-        categoryId: m['category_id'] as String,
-        note: (m['note'] as String?) ?? '',
-        date: DateTime.fromMillisecondsSinceEpoch(m['date'] as int),
-        source: TxSource.values.byName(m['source'] as String),
-        bank: m['bank'] as String?,
-        rawText: m['raw_text'] as String?,
-        needsReview: (m['needs_review'] as int? ?? 0) == 1,
-      );
+    id: m['id'] as int?,
+    amount: m['amount'] as int,
+    type: TxType.values.byName(m['type'] as String),
+    categoryId: m['category_id'] as String,
+    note: (m['note'] as String?) ?? '',
+    date: DateTime.fromMillisecondsSinceEpoch(m['date'] as int),
+    source: TxSource.values.byName(m['source'] as String),
+    bank: m['bank'] as String?,
+    rawText: m['raw_text'] as String?,
+    needsReview: (m['needs_review'] as int? ?? 0) == 1,
+  );
 }

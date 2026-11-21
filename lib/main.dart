@@ -3,12 +3,14 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/home_shell.dart';
+
 import 'package:flutter/foundation.dart';
 
 import 'services/database.dart';
 import 'services/store.dart';
 import 'services/web_store.dart';
 import 'state/app_state.dart';
+import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +26,7 @@ class TpWalletApp extends StatelessWidget {
 
   final AppState state;
 
-  static const seed = Color(0xFF0E9F6E);
+  static const seed = AppColors.brand;
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +38,8 @@ class TpWalletApp extends StatelessWidget {
         locale: const Locale('vi'),
         supportedLocales: const [Locale('vi'), Locale('en')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: seed),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: seed, brightness: Brightness.dark),
-          useMaterial3: true,
-        ),
+        theme: buildTheme(Brightness.light),
+        darkTheme: buildTheme(Brightness.dark),
         home: const HomeShell(),
       ),
     );

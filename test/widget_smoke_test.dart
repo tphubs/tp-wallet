@@ -30,7 +30,7 @@ void main() {
 
     expect(find.text('TP Wallet'), findsOneWidget);
     expect(find.text('Cafe'), findsOneWidget);
-    expect(find.text('1 giao dịch tự thêm cần xem lại'), findsOneWidget);
+    expect(find.text('1 giao dịch cần xem lại'), findsOneWidget);
 
     await tester.tap(find.text('Báo cáo'));
     await tester.pumpAndSettle();
@@ -42,9 +42,6 @@ void main() {
 
     await tester.tap(find.text('Sổ thu chi'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Thêm'));
-    await tester.pumpAndSettle();
-    expect(find.text('Nhập tay'), findsOneWidget);
     await tester.tap(find.text('Nhập tay'));
     await tester.pumpAndSettle();
     expect(find.text('Thêm giao dịch'), findsOneWidget);

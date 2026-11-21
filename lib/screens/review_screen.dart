@@ -49,24 +49,26 @@ class _ReviewScreenState extends State<ReviewScreen> {
       ),
       body: _items.isEmpty
           ? const Center(child: Text('Không còn giao dịch nào cần xem lại'))
-          : ListView(children: [
-              for (final t in _items)
-                TxTile(
-                  tx: t,
-                  onTap: () async {
-                    await openEditor(context, t, original: t);
-                    _load();
-                  },
-                  trailing: IconButton(
-                    tooltip: 'Đúng rồi',
-                    icon: const Icon(Icons.check_circle_outline),
-                    onPressed: () async {
-                      await s.confirm(t);
+          : ListView(
+              children: [
+                for (final t in _items)
+                  TxTile(
+                    tx: t,
+                    onTap: () async {
+                      await openEditor(context, t, original: t);
                       _load();
                     },
+                    trailing: IconButton(
+                      tooltip: 'Đúng rồi',
+                      icon: const Icon(Icons.check_circle_outline),
+                      onPressed: () async {
+                        await s.confirm(t);
+                        _load();
+                      },
+                    ),
                   ),
-                ),
-            ]),
+              ],
+            ),
     );
   }
 }

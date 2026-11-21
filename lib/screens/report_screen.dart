@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/transaction.dart';
 import '../state/app_state.dart';
+import '../theme.dart';
 import '../utils/format.dart';
 import 'month_header.dart';
 
@@ -47,41 +48,64 @@ class _ReportScreenState extends State<ReportScreen> {
               child: Center(child: Text('Chưa có dữ liệu tháng này')),
             )
           else ...[
-            SizedBox(
-              height: 220,
-              child: Stack(alignment: Alignment.center, children: [
-                PieChart(PieChartData(
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 64,
-                  sections: [
-                    for (final t in totals)
-                      PieChartSectionData(
-                        value: t.total.toDouble(),
-                        color: t.category.color,
-                        radius: 40,
-                        showTitle: false,
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: SizedBox(
+                  height: 220,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      PieChart(
+                        PieChartData(
+                          sectionsSpace: 3,
+                          centerSpaceRadius: 62,
+                          sections: [
+                            for (final t in totals)
+                              PieChartSectionData(
+                                value: t.total.toDouble(),
+                                color: t.category.color,
+                                radius: 34,
+                                showTitle: false,
+                              ),
+                          ],
+                        ),
                       ),
-                  ],
-                )),
-                Column(mainAxisSize: MainAxisSize.min, children: [
-                  Text(_type == TxType.expense ? 'Tổng chi' : 'Tổng thu',
-                      style: Theme.of(context).textTheme.labelMedium),
-                  Text(formatShort(sum),
-                      style: Theme.of(context).textTheme.titleLarge),
-                ]),
-              ]),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _type == TxType.expense ? 'Tổng chi' : 'Tổng thu',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                          Text(
+                            formatShort(sum),
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             for (final t in totals)
               ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: t.category.color.withValues(alpha: 0.15),
-                  child: Icon(t.category.icon, color: t.category.color),
+                leading: CategoryBadge(
+                  icon: t.category.icon,
+                  color: t.category.color,
                 ),
-                title: Text(t.category.name),
+                title: Text(
+                  t.category.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 subtitle: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
+                    minHeight: 6,
                     value: sum == 0 ? 0 : t.total / sum,
                     color: t.category.color,
                     backgroundColor: t.category.color.withValues(alpha: 0.12),
@@ -91,8 +115,10 @@ class _ReportScreenState extends State<ReportScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(formatVnd(t.total),
-                        style: const TextStyle(fontWeight: FontWeight.w600)),
+                    Text(
+                      formatVnd(t.total),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     Text('${(t.total * 100 / sum).toStringAsFixed(0)}%'),
                   ],
                 ),

@@ -14,15 +14,19 @@ class MonthHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-            tooltip: 'Tháng trước',
-            onPressed: () => s.changeMonth(-1),
-            icon: const Icon(Icons.chevron_left)),
-        Text(formatMonth(s.month),
-            style: Theme.of(context).textTheme.titleMedium),
+          tooltip: 'Tháng trước',
+          onPressed: () => s.changeMonth(-1),
+          icon: const Icon(Icons.chevron_left),
+        ),
+        Text(
+          formatMonth(s.month),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         IconButton(
-            tooltip: 'Tháng sau',
-            onPressed: () => s.changeMonth(1),
-            icon: const Icon(Icons.chevron_right)),
+          tooltip: 'Tháng sau',
+          onPressed: () => s.changeMonth(1),
+          icon: const Icon(Icons.chevron_right),
+        ),
       ],
     );
   }

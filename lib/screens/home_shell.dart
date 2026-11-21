@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../models/category.dart';
 import '../services/ocr_web_stub.dart'
-    if (dart.library.js_interop) '../services/ocr_web.dart' as web;
+    if (dart.library.js_interop) '../services/ocr_web.dart'
+    as web;
 import '../state/app_state.dart';
 import '../utils/format.dart';
 
@@ -25,7 +26,9 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    if (kIsWeb) WidgetsBinding.instance.addPostFrameCallback((_) => _incoming());
+    if (kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _incoming());
+    }
   }
 
   /// Bản web: Phím tắt iPhone mở link có `?text=` kèm tin nhắn ngân hàng.
@@ -57,17 +60,20 @@ class _HomeShellState extends State<HomeShell> {
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: const [
           NavigationDestination(
-              icon: Icon(Icons.receipt_long_outlined),
-              selectedIcon: Icon(Icons.receipt_long),
-              label: 'Sổ thu chi'),
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
+            label: 'Sổ thu chi',
+          ),
           NavigationDestination(
-              icon: Icon(Icons.pie_chart_outline),
-              selectedIcon: Icon(Icons.pie_chart),
-              label: 'Báo cáo'),
+            icon: Icon(Icons.pie_chart_outline),
+            selectedIcon: Icon(Icons.pie_chart),
+            label: 'Báo cáo',
+          ),
           NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings),
-              label: 'Cài đặt'),
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Cài đặt',
+          ),
         ],
       ),
     );

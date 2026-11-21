@@ -28,7 +28,9 @@ class WebStore implements TxStore {
     }
     final rules = <String, String>{};
     final rr = prefs.getString(_kRules);
-    if (rr != null) rules.addAll(Map<String, String>.from(jsonDecode(rr) as Map));
+    if (rr != null) {
+      rules.addAll(Map<String, String>.from(jsonDecode(rr) as Map));
+    }
     final next = items.fold<int>(0, (m, t) => (t.id ?? 0) > m ? t.id! : m) + 1;
     return WebStore._(prefs, items, rules, next);
   }
@@ -36,11 +38,11 @@ class WebStore implements TxStore {
   Future<void> _persist() =>
       _prefs.setString(_kTx, jsonEncode([for (final t in _items) t.toMap()]));
 
-  List<Transaction> _sorted(Iterable<Transaction> it) => it.toList()
-    ..sort((a, b) {
-      final c = b.date.compareTo(a.date);
-      return c != 0 ? c : (b.id ?? 0).compareTo(a.id ?? 0);
-    });
+  List<Transaction> _sorted(Iterable<Transaction> it) =>
+      it.toList()..sort((a, b) {
+        final c = b.date.compareTo(a.date);
+        return c != 0 ? c : (b.id ?? 0).compareTo(a.id ?? 0);
+      });
 
   @override
   Future<int> insert(Transaction t) async {
@@ -64,22 +66,27 @@ class WebStore implements TxStore {
   }
 
   @override
-  Future<List<Transaction>> inRange(DateTime from, DateTime to) async => _sorted(
-      _items.where((t) => !t.date.isBefore(from) && t.date.isBefore(to)));
+  Future<List<Transaction>> inRange(DateTime from, DateTime to) async =>
+      _sorted(
+        _items.where((t) => !t.date.isBefore(from) && t.date.isBefore(to)),
+      );
 
   @override
   Future<List<Transaction>> needingReview() async =>
       _sorted(_items.where((t) => t.needsReview));
 
   @override
-  Future<bool> hasNear(Transaction t,
-          {Duration window = const Duration(minutes: 3)}) async =>
-      _items.any((x) =>
-          x.amount == t.amount &&
-          x.type == t.type &&
-          x.source != TxSource.manual &&
-          (x.bank ?? '') == (t.bank ?? '') &&
-          x.date.difference(t.date).abs() <= window);
+  Future<bool> hasNear(
+    Transaction t, {
+    Duration window = const Duration(minutes: 3),
+  }) async => _items.any(
+    (x) =>
+        x.amount == t.amount &&
+        x.type == t.type &&
+        x.source != TxSource.manual &&
+        (x.bank ?? '') == (t.bank ?? '') &&
+        x.date.difference(t.date).abs() <= window,
+  );
 
   @override
   Future<Map<String, String>> rules() async => Map.of(_rules);

@@ -19,12 +19,12 @@ class OcrService {
     if (kIsWeb) return web.recognizeWeb(imagePath);
     final recognizer = TextRecognizer(script: TextRecognitionScript.latin);
     try {
-      final result =
-          await recognizer.processImage(InputImage.fromFilePath(imagePath));
+      final result = await recognizer.processImage(
+        InputImage.fromFilePath(imagePath),
+      );
       // Giữ thứ tự từ trên xuống dưới, mỗi dòng một hàng.
-      final lines = <TextLine>[
-        for (final b in result.blocks) ...b.lines,
-      ]..sort((a, b) => a.boundingBox.top.compareTo(b.boundingBox.top));
+      final lines = <TextLine>[for (final b in result.blocks) ...b.lines]
+        ..sort((a, b) => a.boundingBox.top.compareTo(b.boundingBox.top));
       return lines.map((l) => l.text).join('\n');
     } finally {
       await recognizer.close();

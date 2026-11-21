@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../models/category.dart';
 import '../models/transaction.dart';
+import '../theme.dart';
 import '../utils/format.dart';
 
 class TxTile extends StatelessWidget {
@@ -23,31 +24,41 @@ class TxTile extends StatelessWidget {
     ].join(' · ');
     return ListTile(
       onTap: onTap,
-      leading: CircleAvatar(
-        backgroundColor: c.color.withValues(alpha: 0.15),
-        child: Icon(c.icon, color: c.color),
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      leading: CategoryBadge(icon: c.icon, color: c.color),
       title: Row(
         children: [
-          Flexible(child: Text(c.name, overflow: TextOverflow.ellipsis)),
+          Flexible(
+            child: Text(
+              c.name,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
           if (tx.needsReview) ...[
             const SizedBox(width: 6),
-            Icon(Icons.auto_awesome,
-                size: 16, color: Theme.of(context).colorScheme.tertiary),
+            const Icon(
+              Icons.auto_awesome_rounded,
+              size: 16,
+              color: Color(0xFFF59E0B),
+            ),
           ],
         ],
       ),
       subtitle: Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        Text(
-          formatVnd(tx.signedAmount, signed: true),
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: isIncome ? const Color(0xFF0E9F6E) : const Color(0xFFE53935),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            formatVnd(tx.signedAmount, signed: true),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: isIncome ? AppColors.income : AppColors.expense,
+            ),
           ),
-        ),
-        ?trailing,
-      ]),
+          ?trailing,
+        ],
+      ),
     );
   }
 }

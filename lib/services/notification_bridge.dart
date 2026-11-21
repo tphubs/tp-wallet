@@ -65,10 +65,11 @@ class NotificationBridge {
   }
 
   static CapturedNotification _fromMap(Map m) => CapturedNotification(
-        (m['package'] as String?) ?? '',
-        (m['title'] as String?) ?? '',
-        (m['text'] as String?) ?? '',
-        DateTime.fromMillisecondsSinceEpoch((m['postedAt'] as num?)?.toInt() ??
-            DateTime.now().millisecondsSinceEpoch),
-      );
+    (m['package'] as String?) ?? '',
+    (m['title'] as String?) ?? '',
+    (m['text'] as String?) ?? '',
+    DateTime.fromMillisecondsSinceEpoch(
+      (m['postedAt'] as num?)?.toInt() ?? DateTime.now().millisecondsSinceEpoch,
+    ),
+  );
 }

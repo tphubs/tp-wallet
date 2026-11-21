@@ -110,13 +110,16 @@ class BankParser {
   static final _balanceLabel = RegExp(
     r'(so du|sodu|\bsd|balance|\bsdc)(\s*(hien tai|kha dung|cuoi( ky)?|moi|tk|tai khoan))?\s*(\(vnd\))?\s*[:=]?\s*$',
   );
-  static final _feeLabel =
-      RegExp(r'(\bphi|\bfee|\bvat)(\s*(giao dich|dich vu|gd))?\s*[:=]?\s*$');
+  static final _feeLabel = RegExp(
+    r'(\bphi|\bfee|\bvat)(\s*(giao dich|dich vu|gd))?\s*[:=]?\s*$',
+  );
   static final _amountLabel = RegExp(
     r'(so tien(\s*(gd|giao dich|chuyen|thanh toan))?|\bps|\bgd|giao dich|amount|\bst|nhan duoc|nhan|thanh toan|chuyen|tru|cong|tang|giam)\s*[:=]?\s*$',
   );
 
-  static final _otpRe = RegExp(r'\botp\b|ma xac thuc|ma xac nhan|ma giao dich la|mat khau');
+  static final _otpRe = RegExp(
+    r'\botp\b|ma xac thuc|ma xac nhan|ma giao dich la|mat khau',
+  );
 
   static final _incomeKw = RegExp(
     r'nhan duoc|ban da nhan|ban vua nhan|da nhan|nhan tien|ghi co|\bcredit|duoc cong|tien vao|hoan tien|refund|\btang\b',
@@ -143,7 +146,8 @@ class BankParser {
   static bool looksLikeTransaction(String text) {
     final n = normalizeVi(text);
     if (_otpRe.hasMatch(n)) return false;
-    final hasSigned = RegExp(r'(?<![\w.,])[+-]\s?\d').hasMatch(n) &&
+    final hasSigned =
+        RegExp(r'(?<![\w.,])[+-]\s?\d').hasMatch(n) &&
         RegExp(r'\d{1,3}([.,]\d{3})+|\d{4,}').hasMatch(n);
     final hasBalance = RegExp(r'so du|\bsd\b|\bsd:').hasMatch(n);
     final strong = RegExp(
@@ -181,8 +185,7 @@ class BankParser {
     for (final m in RegExp(r'\d{1,2}:\d{2}(:\d{2})?').allMatches(norm)) {
       dateSpans.add((m.start, m.end));
     }
-    bool inDate(int s, int e) =>
-        dateSpans.any((d) => s < d.$2 && e > d.$1);
+    bool inDate(int s, int e) => dateSpans.any((d) => s < d.$2 && e > d.$1);
 
     final cands = <_Candidate>[];
     for (final m in _amountRe.allMatches(norm)) {
@@ -190,7 +193,10 @@ class BankParser {
       final unit = m.group(3);
       final sign = m.group(1)?.trim();
       final numStart = m.start + (m.group(1)?.length ?? 0);
-      if (inDate(numStart, m.start + (m.group(1)?.length ?? 0) + digits.length)) {
+      if (inDate(
+        numStart,
+        m.start + (m.group(1)?.length ?? 0) + digits.length,
+      )) {
         continue;
       }
       final grouped = RegExp(r'[.,]').hasMatch(digits);
@@ -286,7 +292,10 @@ class BankParser {
     String clean(String s) {
       var r = s;
       // Cắt ở dấu phân cách hay phần số dư phía sau.
-      final stop = RegExp(r'\||\n|\.\s+(so du|sd)\b|;\s*(so du|sd)\b', caseSensitive: false);
+      final stop = RegExp(
+        r'\||\n|\.\s+(so du|sd)\b|;\s*(so du|sd)\b',
+        caseSensitive: false,
+      );
       final sm = stop.firstMatch(normalizeVi(r));
       if (sm != null) r = r.substring(0, sm.start);
       r = r.trim();
@@ -303,7 +312,11 @@ class BankParser {
       // Ảnh chụp: nhãn ở một dòng, giá trị ở dòng sau.
       if (rest.startsWith('\n')) rest = rest.substring(1);
       final d = clean(rest);
-      if (d.isNotEmpty && !RegExp(r'^[+\-]?\s?[\d.,]+\s*(vnd|đ|₫)?$', caseSensitive: false).hasMatch(d)) {
+      if (d.isNotEmpty &&
+          !RegExp(
+            r'^[+\-]?\s?[\d.,]+\s*(vnd|đ|₫)?$',
+            caseSensitive: false,
+          ).hasMatch(d)) {
         return d;
       }
     }
@@ -317,40 +330,77 @@ class BankParser {
     }
 
     // Kiểu ví điện tử: "... 45.000đ cho Highlands Coffee" / "từ NGUYEN VAN A".
-    final w = RegExp(r'\s(?:cho|tai|tu|den|toi)\s+(.+)$', multiLine: true)
-        .firstMatch(norm);
+    final w = RegExp(
+      r'\s(?:cho|tai|tu|den|toi)\s+(.+)$',
+      multiLine: true,
+    ).firstMatch(norm);
     if (w != null) {
-      final d = clean(original.substring(w.start + w.group(0)!.indexOf(w.group(1)!)));
+      final d = clean(
+        original.substring(w.start + w.group(0)!.indexOf(w.group(1)!)),
+      );
       if (d.isNotEmpty) return d;
     }
     return '';
   }
 
   static DateTime? _date(String norm) {
-    DateTime? build(String d, String mo, String y, String? h, String? mi, String? s) {
+    DateTime? build(
+      String d,
+      String mo,
+      String y,
+      String? h,
+      String? mi,
+      String? s,
+    ) {
       var year = int.parse(y);
       if (year < 100) year += 2000;
       final month = int.parse(mo);
       final day = int.parse(d);
       if (month < 1 || month > 12 || day < 1 || day > 31) return null;
       if (year < 2000 || year > 2100) return null;
-      return DateTime(year, month, day, int.tryParse(h ?? '') ?? 0,
-          int.tryParse(mi ?? '') ?? 0, int.tryParse(s ?? '') ?? 0);
+      return DateTime(
+        year,
+        month,
+        day,
+        int.tryParse(h ?? '') ?? 0,
+        int.tryParse(mi ?? '') ?? 0,
+        int.tryParse(s ?? '') ?? 0,
+      );
     }
 
     final a = _dateRe.firstMatch(norm);
     final b = _timeThenDateRe.firstMatch(norm);
     if (b != null && (a == null || b.start <= a.start)) {
-      return build(b.group(4)!, b.group(5)!, b.group(6)!, b.group(1), b.group(2), b.group(3));
+      return build(
+        b.group(4)!,
+        b.group(5)!,
+        b.group(6)!,
+        b.group(1),
+        b.group(2),
+        b.group(3),
+      );
     }
     if (a != null) {
-      DateTime? r = build(a.group(1)!, a.group(2)!, a.group(3)!, a.group(4), a.group(5), a.group(6));
+      DateTime? r = build(
+        a.group(1)!,
+        a.group(2)!,
+        a.group(3)!,
+        a.group(4),
+        a.group(5),
+        a.group(6),
+      );
       // Giờ đứng trước ngày nhưng cách xa: "luc 10:20 21/11/2026" đã xử lý ở trên.
       if (r != null && a.group(4) == null) {
         final t = RegExp(r'(\d{1,2}):(\d{2})(?::(\d{2}))?').firstMatch(norm);
         if (t != null) {
-          r = DateTime(r.year, r.month, r.day, int.parse(t.group(1)!),
-              int.parse(t.group(2)!), int.tryParse(t.group(3) ?? '') ?? 0);
+          r = DateTime(
+            r.year,
+            r.month,
+            r.day,
+            int.parse(t.group(1)!),
+            int.parse(t.group(2)!),
+            int.tryParse(t.group(3) ?? '') ?? 0,
+          );
         }
       }
       return r;
@@ -363,7 +413,8 @@ class BankParser {
       return bankPackages[packageName];
     }
     for (final e in _bankKeywords.entries) {
-      if (RegExp('(^|[^a-z0-9])${RegExp.escape(e.key)}([^a-z0-9]|\$)').hasMatch(norm)) {
+      if (RegExp('(^|[^a-z0-9])${RegExp.escape(e.key)}([^a-z0-9]|\$)')
+          .hasMatch(norm)) {
         return e.value;
       }
     }

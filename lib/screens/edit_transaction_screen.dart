@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/category.dart';
 import '../models/transaction.dart';
 import '../state/app_state.dart';
+import '../theme.dart';
 import '../widgets/amount_input.dart';
 
 class EditTransactionScreen extends StatefulWidget {
@@ -38,7 +39,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     _categoryId = t?.categoryId ?? Categories.otherExpenseId;
     _date = t?.date ?? DateTime.now();
     _amount = TextEditingController(
-        text: t == null ? '' : ThousandsFormatter.format(t.amount));
+      text: t == null ? '' : ThousandsFormatter.format(t.amount),
+    );
     _note = TextEditingController(text: t?.note ?? '');
     _categoryTouched = t != null;
   }
@@ -75,9 +77,18 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     );
     if (d == null || !mounted) return;
     final tm = await showTimePicker(
-        context: context, initialTime: TimeOfDay.fromDateTime(_date));
-    setState(() => _date = DateTime(
-        d.year, d.month, d.day, tm?.hour ?? _date.hour, tm?.minute ?? _date.minute));
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_date),
+    );
+    setState(
+      () => _date = DateTime(
+        d.year,
+        d.month,
+        d.day,
+        tm?.hour ?? _date.hour,
+        tm?.minute ?? _date.minute,
+      ),
+    );
   }
 
   Future<void> _save() async {
@@ -87,9 +98,14 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
           .showSnackBar(const SnackBar(content: Text('Nhập số tiền nhé')));
       return;
     }
-    final base = widget.initial ??
+    final base =
+        widget.initial ??
         Transaction(
-            amount: amount, type: _type, categoryId: _categoryId, date: _date);
+          amount: amount,
+          type: _type,
+          categoryId: _categoryId,
+          date: _date,
+        );
     final t = base.copyWith(
       amount: amount,
       type: _type,
@@ -98,7 +114,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       date: _date,
       needsReview: false,
     );
-    await context.read<AppState>().save(t, original: widget.original ?? widget.initial);
+    await context.read<AppState>().save(
+      t,
+      original: widget.original ?? widget.initial,
+    );
     if (mounted) Navigator.pop(context);
   }
 
@@ -108,8 +127,14 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       builder: (d) => AlertDialog(
         title: const Text('Xóa giao dịch này?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Hủy')),
-          FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Xóa')),
+          TextButton(
+            onPressed: () => Navigator.pop(d, false),
+            child: const Text('Hủy'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(d, true),
+            child: const Text('Xóa'),
+          ),
         ],
       ),
     );
@@ -128,9 +153,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
         actions: [
           if (_isEdit)
             IconButton(
-                tooltip: 'Xóa',
-                onPressed: _delete,
-                icon: const Icon(Icons.delete_outline)),
+              tooltip: 'Xóa',
+              onPressed: _delete,
+              icon: const Icon(Icons.delete_outline),
+            ),
         ],
       ),
       body: ListView(
@@ -138,9 +164,9 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
         children: [
           if (widget.initial?.needsReview == true)
             Card(
-              color: Theme.of(context).colorScheme.tertiaryContainer,
+              color: const Color(0xFFFEF3C7),
               child: const ListTile(
-                leading: Icon(Icons.auto_awesome),
+                leading: Icon(Icons.auto_awesome_rounded, color: Color(0xFFB45309)),
                 title: Text('App đã tự đọc giao dịch này'),
                 subtitle: Text('Kiểm tra lại rồi bấm Lưu'),
               ),
@@ -148,13 +174,15 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
           SegmentedButton<TxType>(
             segments: const [
               ButtonSegment(
-                  value: TxType.expense,
-                  label: Text('Chi'),
-                  icon: Icon(Icons.arrow_upward)),
+                value: TxType.expense,
+                label: Text('Chi'),
+                icon: Icon(Icons.arrow_upward),
+              ),
               ButtonSegment(
-                  value: TxType.income,
-                  label: Text('Thu'),
-                  icon: Icon(Icons.arrow_downward)),
+                value: TxType.income,
+                label: Text('Thu'),
+                icon: Icon(Icons.arrow_downward),
+              ),
             ],
             selected: {_type},
             onSelectionChanged: (v) => _setType(v.first),
@@ -165,11 +193,21 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
             autofocus: widget.initial == null,
             keyboardType: TextInputType.number,
             inputFormatters: [ThousandsFormatter()],
-            style: Theme.of(context).textTheme.headlineMedium,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.w800,
+              color: _type == TxType.income
+                  ? AppColors.income
+                  : AppColors.expense,
+            ),
             decoration: const InputDecoration(
-              labelText: 'Số tiền',
+              hintText: '0',
               suffixText: '₫',
-              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 20,
+                horizontal: 16,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -178,22 +216,31 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
             onChanged: _onNoteChanged,
             decoration: const InputDecoration(
               labelText: 'Ghi chú / nội dung',
-              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.notes_rounded),
             ),
           ),
           const SizedBox(height: 16),
-          Text('Hạng mục', style: Theme.of(context).textTheme.titleSmall),
+          Text(
+            'Hạng mục',
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          GridView.count(
+            crossAxisCount: 4,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.82,
             children: [
               for (final c in cats)
-                ChoiceChip(
-                  avatar: Icon(c.icon, size: 18, color: c.color),
-                  label: Text(c.name),
+                _CategoryTile(
+                  name: c.name,
+                  icon: c.icon,
+                  color: c.color,
                   selected: c.id == _categoryId,
-                  onSelected: (_) => setState(() {
+                  onTap: () => setState(() {
                     _categoryId = c.id;
                     _categoryTouched = true;
                   }),
@@ -226,4 +273,57 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       ),
     );
   }
+}
+
+class _CategoryTile extends StatelessWidget {
+  const _CategoryTile({
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+  final String name;
+  final IconData icon;
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    borderRadius: BorderRadius.circular(16),
+    onTap: onTap,
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      decoration: BoxDecoration(
+        color: selected
+            ? color.withValues(alpha: 0.14)
+            : Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: selected ? color : Colors.transparent,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CategoryBadge(icon: icon, color: color, size: 40),
+          const SizedBox(height: 6),
+          Text(
+            name,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11.5,
+              height: 1.15,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
