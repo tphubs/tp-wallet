@@ -1,0 +1,213 @@
+import 'package:material_ui/material_ui.dart';
+
+import 'transaction.dart';
+
+/// Một hạng mục thu hoặc chi.
+class Category {
+  final String id;
+  final String name;
+  final IconData icon;
+  final Color color;
+  final TxType type;
+
+  /// Từ khóa (không dấu, chữ thường) để tự phân loại.
+  final List<String> keywords;
+
+  const Category({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.type,
+    this.keywords = const [],
+  });
+}
+
+class Categories {
+  static const otherExpenseId = 'khac_chi';
+  static const otherIncomeId = 'khac_thu';
+  static const transferOutId = 'chuyen_tien';
+  static const transferInId = 'duoc_chuyen';
+
+  static const List<Category> all = [
+    // ---- Chi ----
+    Category(
+      id: 'cafe',
+      name: 'Cafe',
+      icon: Icons.local_cafe,
+      color: Color(0xFF8D6E63),
+      type: TxType.expense,
+      keywords: [
+        'cafe', 'coffee', 'ca phe', 'caphe', 'highlands', 'starbucks',
+        'phuc long', 'trung nguyen', 'cong caphe', 'the coffee house',
+        'katinat', 'tra sua', 'milk tea', 'gong cha', 'tocotoco', 'koi the',
+        'phe la', 'passio', 'mixue',
+      ],
+    ),
+    Category(
+      id: 'an_uong',
+      name: 'Ăn uống',
+      icon: Icons.restaurant,
+      color: Color(0xFFEF6C00),
+      type: TxType.expense,
+      keywords: [
+        'an uong', 'an trua', 'an sang', 'an toi', 'an com', 'com tam', 'com ga', 'pho', 'bun',
+        'banh mi', 'quan an', 'nha hang', 'restaurant', 'food', 'grabfood',
+        'shopeefood', 'baemin', 'kfc', 'lotteria', 'jollibee', 'mcdonald',
+        'pizza', 'lau', 'nuong', 'buffet', 'bia', 'nhau', 'oc', 'kem',
+        'circle k', 'gs25', 'family mart', 'familymart', '7-eleven', 'ministop',
+        'bach hoa xanh', 'winmart', 'coopmart', 'di cho', 'sieu thi',
+      ],
+    ),
+    Category(
+      id: 'di_choi',
+      name: 'Đi chơi',
+      icon: Icons.celebration,
+      color: Color(0xFFD81B60),
+      type: TxType.expense,
+      keywords: [
+        'di choi', 'du lich', 'karaoke', 'cgv', 'lotte cinema', 'galaxy',
+        'bhd', 'rap phim', 'xem phim', 've xem', 'khach san', 'hotel', 'resort',
+        'homestay', 'agoda', 'booking', 'traveloka', 'vietjet', 'vietnam airlines',
+        'bamboo', 'game', 'steam', 'netflix', 'spotify', 'youtube',
+      ],
+    ),
+    Category(
+      id: 'di_lai',
+      name: 'Đi lại',
+      icon: Icons.directions_car,
+      color: Color(0xFF1E88E5),
+      type: TxType.expense,
+      keywords: [
+        'grab', 'be', 'xanh sm', 'gojek', 'taxi', 'xang', 'petrolimex',
+        'gui xe', 'giu xe', 'parking', 'vetc', 'epass', 'phi duong bo',
+        'sua xe', 'rua xe',
+      ],
+    ),
+    Category(
+      id: 'mua_sam',
+      name: 'Mua sắm',
+      icon: Icons.shopping_bag,
+      color: Color(0xFF8E24AA),
+      type: TxType.expense,
+      keywords: [
+        'shopee', 'lazada', 'tiki', 'tiktok shop', 'sendo', 'mua sam',
+        'quan ao', 'giay', 'uniqlo', 'zara', 'h&m', 'thegioididong',
+        'dien may xanh', 'fpt shop', 'cellphones', 'my pham', 'guardian',
+        'watsons', 'hasaki',
+      ],
+    ),
+    Category(
+      id: 'hoa_don',
+      name: 'Hóa đơn',
+      icon: Icons.receipt_long,
+      color: Color(0xFF00897B),
+      type: TxType.expense,
+      keywords: [
+        'tien dien', 'evn', 'tien nuoc', 'internet', 'wifi', 'fpt telecom',
+        'vnpt', 'viettel', 'mobifone', 'vinaphone', 'nap tien', 'nap dt',
+        'topup', 'cuoc', 'hoa don', 'thanh toan hoa don', 'truyen hinh',
+      ],
+    ),
+    Category(
+      id: 'nha_cua',
+      name: 'Nhà cửa',
+      icon: Icons.home,
+      color: Color(0xFF6D4C41),
+      type: TxType.expense,
+      keywords: ['tien nha', 'thue nha', 'tien phong', 'chung cu', 'phi quan ly', 'ikea'],
+    ),
+    Category(
+      id: 'suc_khoe',
+      name: 'Sức khỏe',
+      icon: Icons.favorite,
+      color: Color(0xFFE53935),
+      type: TxType.expense,
+      keywords: [
+        'thuoc', 'nha thuoc', 'pharmacity', 'long chau', 'an khang',
+        'benh vien', 'phong kham', 'nha khoa', 'gym', 'yoga', 'bao hiem',
+      ],
+    ),
+    Category(
+      id: 'hoc_tap',
+      name: 'Học tập',
+      icon: Icons.school,
+      color: Color(0xFF3949AB),
+      type: TxType.expense,
+      keywords: ['hoc phi', 'khoa hoc', 'sach', 'fahasa', 'udemy', 'coursera'],
+    ),
+    Category(
+      id: transferOutId,
+      name: 'Chuyển tiền',
+      icon: Icons.send,
+      color: Color(0xFF546E7A),
+      type: TxType.expense,
+      keywords: ['chuyen tien', 'chuyen khoan', 'ck'],
+    ),
+    Category(
+      id: otherExpenseId,
+      name: 'Khác',
+      icon: Icons.more_horiz,
+      color: Color(0xFF9E9E9E),
+      type: TxType.expense,
+    ),
+    // ---- Thu ----
+    Category(
+      id: 'luong',
+      name: 'Lương',
+      icon: Icons.work,
+      color: Color(0xFF43A047),
+      type: TxType.income,
+      keywords: ['luong', 'salary', 'payroll', 'tra luong'],
+    ),
+    Category(
+      id: 'thuong',
+      name: 'Thưởng',
+      icon: Icons.card_giftcard,
+      color: Color(0xFFFDD835),
+      type: TxType.income,
+      keywords: ['thuong', 'bonus', 'li xi', 'lixi', 'mung'],
+    ),
+    Category(
+      id: 'hoan_tien',
+      name: 'Hoàn tiền',
+      icon: Icons.replay,
+      color: Color(0xFF00ACC1),
+      type: TxType.income,
+      keywords: ['hoan tien', 'refund', 'cashback', 'hoan tra'],
+    ),
+    Category(
+      id: 'lai',
+      name: 'Lãi / Đầu tư',
+      icon: Icons.trending_up,
+      color: Color(0xFF7CB342),
+      type: TxType.income,
+      keywords: ['lai tiet kiem', 'tra lai', 'tien lai', 'interest', 'co tuc'],
+    ),
+    Category(
+      id: transferInId,
+      name: 'Được chuyển tiền',
+      icon: Icons.call_received,
+      color: Color(0xFF26A69A),
+      type: TxType.income,
+      keywords: ['chuyen tien', 'chuyen khoan'],
+    ),
+    Category(
+      id: otherIncomeId,
+      name: 'Thu khác',
+      icon: Icons.more_horiz,
+      color: Color(0xFF9E9E9E),
+      type: TxType.income,
+    ),
+  ];
+
+  static final Map<String, Category> _byId = {for (final c in all) c.id: c};
+
+  static Category byId(String id) => _byId[id] ?? _byId[otherExpenseId]!;
+
+  static List<Category> ofType(TxType type) =>
+      all.where((c) => c.type == type).toList();
+
+  static String fallbackFor(TxType type) =>
+      type == TxType.income ? transferInId : otherExpenseId;
+}
