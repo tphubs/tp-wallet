@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' hide Transaction;
 import 'package:tp_wallet/models/transaction.dart';
@@ -7,6 +8,8 @@ import 'package:tp_wallet/state/app_state.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
+  // Không có phần Android gốc khi chạy kiểm thử.
+  debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
   late AppState s;
 
@@ -37,7 +40,7 @@ void main() {
     final draft = s.draftFromText('-200.000 VND ND: NGUYEN THI LAN chuyen tien',
         source: TxSource.paste)!;
     expect(draft.categoryId, 'chuyen_tien');
-    await s.db_insertForTest(draft);
+    await s.insertForTest(draft);
     final saved = s.transactions.first;
     await s.save(saved.copyWith(categoryId: 'nha_cua'), original: saved);
     final next = s.draftFromText('-300.000 VND ND: NGUYEN THI LAN chuyen tien thang 12',

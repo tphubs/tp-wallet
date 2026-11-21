@@ -3,13 +3,17 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/home_shell.dart';
+import 'package:flutter/foundation.dart';
+
 import 'services/database.dart';
+import 'services/store.dart';
+import 'services/web_store.dart';
 import 'state/app_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('vi');
-  final db = await AppDatabase.open();
+  final TxStore db = kIsWeb ? await WebStore.open() : await AppDatabase.open();
   final state = AppState(db);
   await state.init();
   runApp(TpWalletApp(state: state));

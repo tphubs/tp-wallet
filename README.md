@@ -17,6 +17,17 @@ App quản lý thu chi cá nhân cho Android và iPhone (Flutter). Tiếng Việ
 - Tổng thu / chi / còn lại theo tháng, báo cáo theo hạng mục (biểu đồ tròn).
 - Dữ liệu lưu trên máy (SQLite). Sao lưu đám mây: sẽ thêm (Firebase).
 
+## Bản web (dùng trên iPhone không cần App Store)
+
+Cùng một mã nguồn, build ra web và tự đưa lên GitHub Pages
+(`.github/workflows/deploy-web.yml`). Mở link bằng Safari > nút Chia sẻ >
+"Thêm vào MH chính" để có biểu tượng như app thật.
+
+- Dữ liệu lưu trong bộ nhớ của trình duyệt trên máy đó.
+- Đọc ảnh chuyển khoản bằng Tesseract.js ngay trong trình duyệt (lần đầu tải dữ liệu
+  tiếng Việt vài MB).
+- Mở link kèm `?text=<tin nhắn ngân hàng>` sẽ tự thêm giao dịch (dùng cho Phím tắt).
+
 ## Giới hạn trên iPhone
 
 iOS không cho app đọc thông báo của app khác, nên trên iPhone dùng ảnh chụp chuyển khoản

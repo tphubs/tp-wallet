@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Cài đặt'), centerTitle: true),
       body: ListView(children: [
         const _Section('Tự động ghi giao dịch'),
-        if (Platform.isAndroid)
+        if (NotificationBridge.supported)
           ListTile(
             leading: Icon(
               s.notificationAccess ? Icons.notifications_active : Icons.notifications_off,
@@ -38,12 +36,13 @@ class SettingsScreen extends StatelessWidget {
             subtitle: Text(
                 'iPhone không cho app khác đọc thông báo ngân hàng. Bạn chụp '
                 'màn hình chuyển khoản rồi bấm Thêm > Từ ảnh chụp, hoặc sao chép '
-                'tin nhắn ngân hàng và chọn Dán.'),
+                'tin nhắn / thông báo ngân hàng rồi bấm Thêm > Dán.'),
           ),
         const ListTile(
           leading: Icon(Icons.lock_outline),
           title: Text('Quyền riêng tư'),
-          subtitle: Text('Nội dung thông báo và ảnh được đọc ngay trên máy, '
+          subtitle: Text('Nội dung thông báo và ảnh được đọc ngay trên máy '
+              '(bản web: trong trình duyệt), '
               'không gửi đi đâu. Chỉ thông báo giống biến động số dư mới được giữ lại.'),
         ),
         const _Section('Dữ liệu'),

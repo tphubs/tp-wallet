@@ -6,7 +6,7 @@ import '../models/category.dart';
 import '../models/transaction.dart';
 import '../services/bank_parser.dart';
 import '../services/categorizer.dart';
-import '../services/database.dart';
+import '../services/store.dart';
 import '../services/notification_bridge.dart';
 
 class CategoryTotal {
@@ -18,7 +18,7 @@ class CategoryTotal {
 class AppState extends ChangeNotifier with WidgetsBindingObserver {
   AppState(this._db);
 
-  final AppDatabase _db;
+  final TxStore _db;
   Categorizer _categorizer = Categorizer();
   StreamSubscription<void>? _notifSub;
 
@@ -145,6 +145,17 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return added;
   }
 
+  /// Văn bản gửi vào từ bên ngoài (ví dụ Phím tắt iPhone mở link ?text=...).
+  /// Tự thêm như một giao dịch cần xem lại. Trả về giao dịch đã thêm.
+  Future<Transaction?> addFromIncomingText(String text) async {
+    final t = draftFromText(text, source: TxSource.paste);
+    if (t == null) return null;
+    if (await _db.hasNear(t)) return null;
+    final id = await _db.insert(t);
+    await reload();
+    return t.copyWith(id: id);
+  }
+
   Future<void> save(Transaction t, {Transaction? original}) async {
     if (t.id == null) {
       await _db.insert(t);
@@ -166,7 +177,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   @visibleForTesting
-  Future<void> db_insertForTest(Transaction t) async {
+  Future<void> insertForTest(Transaction t) async {
     await _db.insert(t);
     await reload();
   }

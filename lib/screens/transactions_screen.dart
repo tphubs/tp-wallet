@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -180,6 +181,14 @@ Future<void> _fromPaste(BuildContext context) async {
         ),
       ),
       actions: [
+        TextButton.icon(
+          onPressed: () async {
+            final c = await Clipboard.getData(Clipboard.kTextPlain);
+            if (c?.text != null) ctrl.text = c!.text!;
+          },
+          icon: const Icon(Icons.content_paste),
+          label: const Text('Dán'),
+        ),
         TextButton(onPressed: () => Navigator.pop(d), child: const Text('Hủy')),
         FilledButton(
             onPressed: () => Navigator.pop(d, ctrl.text),

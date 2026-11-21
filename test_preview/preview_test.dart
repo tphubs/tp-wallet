@@ -1,4 +1,5 @@
 // Tạo ảnh xem trước giao diện: flutter test test_preview --update-goldens
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -22,9 +23,12 @@ Future<void> _font(String family, List<String> files) async {
 
 void main() {
   sqfliteFfiInit();
+  // Không có phần Android gốc khi chạy kiểm thử.
+
   final fonts = '${Platform.environment['FLUTTER_ROOT']}/bin/cache/artifacts/material_fonts';
 
   testWidgets('preview', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     tester.view.physicalSize = const Size(1170, 2532);
     tester.view.devicePixelRatio = 3;
     late AppState s;
@@ -83,5 +87,6 @@ void main() {
     await tester.tap(find.text('Cài đặt'));
     await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/4_cai_dat.png'));
+    debugDefaultTargetPlatformOverride = null;
   });
 }

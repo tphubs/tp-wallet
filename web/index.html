@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="TP Wallet - quản lý thu chi cá nhân, tự đọc ảnh chuyển khoản và tin nhắn ngân hàng.">
+  <meta name="theme-color" content="#0E9F6E">
+
+  <!-- Cài lên màn hình chính iPhone -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="TP Wallet">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>TP Wallet</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; background: #F4FBF6; }
+    #splash { position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; font-family: -apple-system, system-ui, sans-serif;
+      color: #0E5E44; gap: 16px; }
+    #splash img { width: 96px; height: 96px; border-radius: 22px; }
+  </style>
+  <script>
+    // Đọc chữ trong ảnh chuyển khoản ngay trong trình duyệt (Tesseract.js),
+    // ảnh không gửi lên máy chủ. Thư viện chỉ tải khi dùng lần đầu.
+    let _tessLoading;
+    function _loadTesseract() {
+      if (window.Tesseract) return Promise.resolve();
+      if (!_tessLoading) {
+        _tessLoading = new Promise((ok, fail) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+          s.onload = ok; s.onerror = fail;
+          document.head.appendChild(s);
+        });
+      }
+      return _tessLoading;
+    }
+    window.tpwOcr = async function (url) {
+      await _loadTesseract();
+      const worker = await Tesseract.createWorker(['vie', 'eng']);
+      try {
+        const { data } = await worker.recognize(url);
+        return data.text || '';
+      } finally {
+        await worker.terminate();
+      }
+    };
+    window.tpwClearQuery = function () {
+      try {
+        const u = new URL(window.location.href);
+        u.search = '';
+        window.history.replaceState(null, '', u.toString());
+      } catch (e) {}
+    };
+  </script>
+</head>
+<body>
+  <div id="splash"><img src="icons/Icon-192.png" alt=""><div>Đang mở TP Wallet...</div></div>
+  <script>
+    window.addEventListener('flutter-first-frame', () => {
+      const s = document.getElementById('splash'); if (s) s.remove();
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' hide Transaction;
 import 'package:tp_wallet/main.dart';
 import 'package:tp_wallet/models/transaction.dart';
@@ -9,8 +9,11 @@ import 'package:tp_wallet/state/app_state.dart';
 
 void main() {
   sqfliteFfiInit();
+  // Không có phần Android gốc khi chạy kiểm thử.
+
 
   testWidgets('các màn hình chính hiển thị được', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     late AppState s;
     await tester.runAsync(() async {
       await initializeDateFormatting('vi');
@@ -46,5 +49,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Thêm giao dịch'), findsOneWidget);
     expect(find.text('Ăn uống'), findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
   });
 }

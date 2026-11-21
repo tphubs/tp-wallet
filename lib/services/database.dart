@@ -2,9 +2,10 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart' hide Transaction;
 
 import '../models/transaction.dart';
+import 'store.dart';
 
 /// Lưu dữ liệu trên máy (SQLite). Sao lưu đám mây sẽ đồng bộ từ đây.
-class AppDatabase {
+class AppDatabase implements TxStore {
   AppDatabase._(this.db);
 
   final Database db;
@@ -42,14 +43,18 @@ class AppDatabase {
     return AppDatabase._(db);
   }
 
+  @override
   Future<int> insert(Transaction t) => db.insert('transactions', t.toMap());
 
+  @override
   Future<void> update(Transaction t) =>
       db.update('transactions', t.toMap(), where: 'id = ?', whereArgs: [t.id]);
 
+  @override
   Future<void> delete(int id) =>
       db.delete('transactions', where: 'id = ?', whereArgs: [id]);
 
+  @override
   Future<List<Transaction>> inRange(DateTime from, DateTime to) async {
     final rows = await db.query(
       'transactions',
@@ -60,6 +65,7 @@ class AppDatabase {
     return rows.map(Transaction.fromMap).toList();
   }
 
+  @override
   Future<List<Transaction>> needingReview() async {
     final rows = await db.query('transactions',
         where: 'needs_review = 1', orderBy: 'date DESC');
@@ -68,6 +74,7 @@ class AppDatabase {
 
   /// Đã có giao dịch giống hệt (cùng số tiền, chiều, ngân hàng) trong ±3 phút
   /// chưa? Thông báo ngân hàng hay bị gửi lặp lại.
+  @override
   Future<bool> hasNear(Transaction t, {Duration window = const Duration(minutes: 3)}) async {
     final from = t.date.subtract(window).millisecondsSinceEpoch;
     final to = t.date.add(window).millisecondsSinceEpoch;
@@ -82,6 +89,7 @@ class AppDatabase {
     return rows.isNotEmpty;
   }
 
+  @override
   Future<Map<String, String>> rules() async {
     final rows = await db.query('category_rules');
     return {
@@ -89,17 +97,20 @@ class AppDatabase {
     };
   }
 
+  @override
   Future<void> saveRule(String keyword, String categoryId) => db.insert(
         'category_rules',
         {'keyword': keyword, 'category_id': categoryId},
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
 
+  @override
   Future<List<Transaction>> all() async {
     final rows = await db.query('transactions', orderBy: 'date DESC');
     return rows.map(Transaction.fromMap).toList();
   }
 
+  @override
   Future<void> clearAll() async {
     await db.delete('transactions');
     await db.delete('category_rules');

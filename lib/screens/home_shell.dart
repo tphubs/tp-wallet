@@ -1,4 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
+
+import '../models/category.dart';
+import '../services/ocr_web_stub.dart'
+    if (dart.library.js_interop) '../services/ocr_web.dart' as web;
+import '../state/app_state.dart';
+import '../utils/format.dart';
 
 import 'report_screen.dart';
 import 'settings_screen.dart';
@@ -13,6 +21,25 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) WidgetsBinding.instance.addPostFrameCallback((_) => _incoming());
+  }
+
+  /// Bản web: Phím tắt iPhone mở link có `?text=` kèm tin nhắn ngân hàng.
+  Future<void> _incoming() async {
+    final text = Uri.base.queryParameters['text'];
+    if (text == null || text.trim().isEmpty) return;
+    web.clearUrlQuery();
+    final t = await context.read<AppState>().addFromIncomingText(text);
+    if (!mounted) return;
+    final msg = t == null
+        ? 'Không đọc được giao dịch từ tin nhắn (hoặc đã thêm rồi)'
+        : 'Đã thêm ${formatVnd(t.signedAmount, signed: true)} · ${Categories.byId(t.categoryId).name}';
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
 
   @override
   Widget build(BuildContext context) {
